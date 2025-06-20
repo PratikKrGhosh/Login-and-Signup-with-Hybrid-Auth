@@ -1,0 +1,39 @@
+{
+  "name": "hybridauth",
+  "version": "1.0.0",
+  "description": "This is a simple Log in and Sign Up system with Hybrid Authentication and Form Validation in express and Drizzle ORM",
+  "keywords": [
+    "hybrid-auth",
+    "dual-authentication",
+    "auth",
+    "drizzle",
+    "express",
+    "form-validation"
+  ],
+  "homepage": "https://github.com/PratikKrGhosh/Login-and-Signup-with-Hybrid-Auth#readme",
+  "bugs": {
+    "url": "https://github.com/PratikKrGhosh/Login-and-Signup-with-Hybrid-Auth/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PratikKrGhosh/Login-and-Signup-with-Hybrid-Auth.git"
+  },
+  "license": "MIT",
+  "author": "Pratik Kumar Ghosh",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./server/server.js"
+  },
+  "dependencies": {
+    "argon2": "^0.43.0",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.5.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "zod": "^3.25.67"
+  }
+}
