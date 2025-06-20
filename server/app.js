@@ -4,6 +4,7 @@ import authRoute from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import flash from "connect-flash";
+import { authMiddleware } from "./middlewares/auth.middleware.js";
 
 const app = express();
 
@@ -21,6 +22,12 @@ app.set("views", path.join(import.meta.dirname, "..", "client", "views"));
 app.use(
   express.static(path.join(import.meta.dirname, "..", "client", "public"))
 );
+
+app.use(authMiddleware);
+app.use((req, res, next) => {
+  res.locals.user = req.user;
+  return next();
+});
 
 app.use("/", authRoute);
 

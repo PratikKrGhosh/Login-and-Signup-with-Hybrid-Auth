@@ -5,6 +5,7 @@ import { signToken } from "../utils/token.js";
 
 export const getSignupPage = (req, res) => {
   try {
+    if (req.user) return res.redirect("/");
     return res.status(200).render("signup", { errors: req.flash("errors") });
   } catch (err) {
     return res.status(404).send("Page not Found");
@@ -13,6 +14,7 @@ export const getSignupPage = (req, res) => {
 
 export const getLoginPage = (req, res) => {
   try {
+    if (req.user) return res.redirect("/");
     return res.status(200).render("login", { errors: req.flash("errors") });
   } catch (err) {
     return res.status(404).send("Page not Found");
@@ -21,6 +23,8 @@ export const getLoginPage = (req, res) => {
 
 export const signup = async (req, res) => {
   try {
+    if (req.user) return res.redirect("/");
+
     const { name, userName, email, password } = req.body;
 
     const hashedPassword = await hashPassword(password);
@@ -46,6 +50,8 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
+    if (req.user) return res.redirect("/");
+
     const { userName, password } = req.body;
     const userData = await findUserByUsername(userName);
 
@@ -83,6 +89,8 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
   try {
+    if (!req.user) return res.redirect("/");
+
     res.clearCookie("access_token");
     return res.redirect("/login");
   } catch (err) {
