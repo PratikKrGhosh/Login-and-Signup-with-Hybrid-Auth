@@ -1,0 +1,1 @@
+ALTER TABLE `session_table` RENAME COLUMN `user_client` TO `user_agent`;

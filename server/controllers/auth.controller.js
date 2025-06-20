@@ -1,7 +1,16 @@
 import { createUser, findUserByUsername } from "../services/user.services.js";
 import { hashPassword, verifyPassword } from "../utils/hash.js";
-import { ACCESS_TOKEN_EXPIRY, MILI_SEC } from "../config/constants.js";
-import { signToken } from "../utils/token.js";
+import {
+  ACCESS_TOKEN_EXPIRY,
+  MILI_SEC,
+  REFRESH_TOKEN_EXPIRY,
+} from "../config/constants.js";
+import { signToken, verifyToken } from "../utils/token.js";
+import {
+  createSession,
+  deleteSession,
+  findSessionById,
+} from "../services/session.services.js";
 
 export const getSignupPage = (req, res) => {
   try {
@@ -70,16 +79,42 @@ export const login = async (req, res) => {
       return res.redirect("/login");
     }
 
+    const newSession = await createSession({
+      userId: userData.id,
+      userAgent: req.headers["user-agent"],
+      ip: req.clientIp,
+    });
+
     const accessToken = await signToken(
       {
         name: userData.name,
         userName: userData.userName,
         email: userData.email,
+        sessionId: newSession.id,
       },
       ACCESS_TOKEN_EXPIRY / MILI_SEC
     );
 
-    res.cookie("access_token", accessToken);
+    const refreshToken = await signToken(
+      { sessionId: newSession.id },
+      REFRESH_TOKEN_EXPIRY / MILI_SEC
+    );
+
+    const baseConfig = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    res.cookie("access_token", accessToken, {
+      ...baseConfig,
+      maxAge: ACCESS_TOKEN_EXPIRY,
+    });
+
+    res.cookie("refresh_token", refreshToken, {
+      ...baseConfig,
+      maxAge: REFRESH_TOKEN_EXPIRY,
+    });
+
     return res.status(200).redirect("/");
   } catch (err) {
     req.flash("errors", "Something Went Wrong");
@@ -87,11 +122,17 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
   try {
     if (!req.user) return res.redirect("/");
 
+    const checkSession = await findSessionById(req.user.sessionId);
+    if (!checkSession) return res.redirect("/login");
+
+    await deleteSession(req.user.sessionId);
+
     res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
     return res.redirect("/login");
   } catch (err) {
     return res.status(400).send("Something Went Wrong");

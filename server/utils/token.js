@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import env from "../config/env.js";
 
-export const signToken = async (data, time) => {
+export const signToken = (data, time) => {
   try {
     return jwt.sign(data, env.key, { expiresIn: time });
   } catch (err) {
@@ -9,7 +9,7 @@ export const signToken = async (data, time) => {
   }
 };
 
-export const verifyToken = async (token) => {
+export const verifyToken = (token) => {
   try {
     return jwt.verify(token, env.key);
   } catch (err) {
