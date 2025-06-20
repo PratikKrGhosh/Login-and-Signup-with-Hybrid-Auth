@@ -24,3 +24,11 @@ form > button {
 form > button {
   cursor: pointer;
 }
+
+p {
+  padding: 0.5rem;
+  width: 100%;
+  border-left: 3px solid rgb(213, 0, 0);
+  background-color: rgb(241, 191, 191);
+  color: rgb(208, 0, 0);
+}

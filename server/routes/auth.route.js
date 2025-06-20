@@ -12,4 +12,6 @@ authRoute
   .get(authController.getLoginPage)
   .post(authController.login);
 
+authRoute.route("/logout").get(authController.logout);
+
 export default authRoute;

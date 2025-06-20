@@ -11,6 +11,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
+app.use(
+  session({ secret: "my-secret", resave: true, saveUninitialized: false })
+);
+app.use(flash());
 
 app.set("view engine", "ejs");
 app.set("views", path.join(import.meta.dirname, "..", "client", "views"));

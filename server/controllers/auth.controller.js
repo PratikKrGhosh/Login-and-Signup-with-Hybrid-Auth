@@ -5,7 +5,7 @@ import { signToken } from "../utils/token.js";
 
 export const getSignupPage = (req, res) => {
   try {
-    return res.status(200).render("signup");
+    return res.status(200).render("signup", { errors: req.flash("errors") });
   } catch (err) {
     return res.status(404).send("Page not Found");
   }
@@ -13,7 +13,7 @@ export const getSignupPage = (req, res) => {
 
 export const getLoginPage = (req, res) => {
   try {
-    return res.status(200).render("login");
+    return res.status(200).render("login", { errors: req.flash("errors") });
   } catch (err) {
     return res.status(404).send("Page not Found");
   }
@@ -32,11 +32,15 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    if (!newUser) return res.send("User Not Created");
+    if (!newUser) {
+      req.flash("errors", "Couldn't create user");
+      return res.redirect("/signup");
+    }
 
     return res.status(201).redirect("/login");
   } catch (err) {
-    return res.status(400).send("Something Went Wrong");
+    req.flash("errors", "Something Went Wrong");
+    return res.redirect("/signup");
   }
 };
 
@@ -45,14 +49,20 @@ export const login = async (req, res) => {
     const { userName, password } = req.body;
     const userData = await findUserByUsername(userName);
 
-    if (!userData) return res.send("No user Found");
+    if (!userData) {
+      req.flash("errors", "Incorrect User Name or Password");
+      return res.redirect("/login");
+    }
 
     const comparePassword = await verifyPassword({
       hashedPassword: userData.password,
       password,
     });
 
-    if (!comparePassword) return res.send("Wrong Password");
+    if (!comparePassword) {
+      req.flash("errors", "Incorrect User Name or Password");
+      return res.redirect("/login");
+    }
 
     const accessToken = await signToken(
       {
@@ -65,6 +75,16 @@ export const login = async (req, res) => {
 
     res.cookie("access_token", accessToken);
     return res.status(200).redirect("/");
+  } catch (err) {
+    req.flash("errors", "Something Went Wrong");
+    return res.redirect("/login");
+  }
+};
+
+export const logout = (req, res) => {
+  try {
+    res.clearCookie("access_token");
+    return res.redirect("/login");
   } catch (err) {
     return res.status(400).send("Something Went Wrong");
   }
