@@ -1,0 +1,26 @@
+/* body css */
+body {
+  justify-content: center;
+}
+
+/* form css */
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  gap: 0.5rem;
+  border: 2px solid black;
+}
+
+form > input,
+form > button {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+form > button {
+  cursor: pointer;
+}

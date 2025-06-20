@@ -1,0 +1,10 @@
+/* home css */
+a {
+  text-decoration: none;
+  color: #000;
+}
+
+button {
+  padding: 0.5rem;
+  cursor: pointer;
+}

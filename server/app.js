@@ -18,4 +18,8 @@ app.get("/", (req, res) => {
   res.status(200).render("home");
 });
 
+app.use("/", (req, res) => {
+  res.status(404).send("Page Not Found");
+});
+
 export default app;
