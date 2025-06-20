@@ -3,7 +3,7 @@ import env from "../config/env.js";
 
 export const hashPassword = async (password) => {
   try {
-    return await argon2.hash(password, env.key);
+    return await argon2.hash(password);
   } catch (err) {
     return null;
   }

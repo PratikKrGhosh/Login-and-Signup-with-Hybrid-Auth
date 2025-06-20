@@ -1,5 +1,7 @@
 import { createUser, findUserByUsername } from "../services/user.services.js";
 import { hashPassword, verifyPassword } from "../utils/hash.js";
+import { ACCESS_TOKEN_EXPIRY, MILI_SEC } from "../config/constants.js";
+import { signToken } from "../utils/token.js";
 
 export const getSignupPage = (req, res) => {
   try {
@@ -52,6 +54,16 @@ export const login = async (req, res) => {
 
     if (!comparePassword) return res.send("Wrong Password");
 
+    const accessToken = await signToken(
+      {
+        name: userData.name,
+        userName: userData.userName,
+        email: userData.email,
+      },
+      ACCESS_TOKEN_EXPIRY / MILI_SEC
+    );
+
+    res.cookie("access_token", accessToken);
     return res.status(200).redirect("/");
   } catch (err) {
     return res.status(400).send("Something Went Wrong");
