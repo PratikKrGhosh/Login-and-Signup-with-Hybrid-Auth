@@ -1,17 +1,14 @@
+// importing all files
 import { createUser, findUserByUsername } from "../services/user.services.js";
 import { hashPassword, verifyPassword } from "../utils/hash.js";
-import {
-  ACCESS_TOKEN_EXPIRY,
-  MILI_SEC,
-  REFRESH_TOKEN_EXPIRY,
-} from "../config/constants.js";
-import { signToken, verifyToken } from "../utils/token.js";
 import {
   createSession,
   deleteSession,
   findSessionById,
 } from "../services/session.services.js";
+import { create_tokens_and_insert_cookies } from "../utils/token.cookie.js";
 
+// handling page routes
 export const getSignupPage = (req, res) => {
   try {
     if (req.user) return res.redirect("/");
@@ -30,6 +27,7 @@ export const getLoginPage = (req, res) => {
   }
 };
 
+// handling auth functionalities
 export const signup = async (req, res) => {
   try {
     if (req.user) return res.redirect("/");
@@ -85,35 +83,7 @@ export const login = async (req, res) => {
       ip: req.clientIp,
     });
 
-    const accessToken = signToken(
-      {
-        name: userData.name,
-        userName: userData.userName,
-        email: userData.email,
-        sessionId: newSession.id,
-      },
-      ACCESS_TOKEN_EXPIRY / MILI_SEC
-    );
-
-    const refreshToken = signToken(
-      { sessionId: newSession.id },
-      REFRESH_TOKEN_EXPIRY / MILI_SEC
-    );
-
-    const baseConfig = {
-      httpOnly: true,
-      secure: true,
-    };
-
-    res.cookie("access_token", accessToken, {
-      ...baseConfig,
-      maxAge: ACCESS_TOKEN_EXPIRY,
-    });
-
-    res.cookie("refresh_token", refreshToken, {
-      ...baseConfig,
-      maxAge: REFRESH_TOKEN_EXPIRY,
-    });
+    create_tokens_and_insert_cookies(userData, newSession);
 
     return res.status(200).redirect("/");
   } catch (err) {

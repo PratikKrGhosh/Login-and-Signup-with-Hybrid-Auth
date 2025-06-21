@@ -1,58 +1,34 @@
-import {
-  ACCESS_TOKEN_EXPIRY,
-  MILI_SEC,
-  REFRESH_TOKEN_EXPIRY,
-} from "../config/constants.js";
+// importing all files
 import { findSessionById } from "../services/session.services.js";
 import { findUserById } from "../services/user.services.js";
-import { signToken, verifyToken } from "../utils/token.js";
+import { create_tokens_and_insert_cookies } from "../utils/token.cookie.js";
+import { verifyToken } from "../utils/token.js";
 
+// creating auth middleware
 export const authMiddleware = async (req, res, next) => {
   const accessToken = req.cookies.access_token;
   const refreshToken = req.cookies.refresh_token;
 
+  // if access token exists
   if (accessToken) {
     const decodedToken = verifyToken(accessToken);
     req.user = decodedToken;
     return next();
   }
 
+  // if refresh token exists but access token does not
   if (refreshToken) {
     const decodedToken = verifyToken(refreshToken);
     const currentSession = await findSessionById(decodedToken.sessionId);
 
+    // if the session is valid
     if (currentSession && currentSession.valid) {
       const userData = await findUserById(currentSession.userId);
 
-      const accessToken = signToken(
-        {
-          name: userData.name,
-          userName: userData.userName,
-          email: userData.email,
-          sessionId: currentSession.id,
-        },
-        ACCESS_TOKEN_EXPIRY / MILI_SEC
+      const { accessToken } = create_tokens_and_insert_cookies(
+        userData,
+        currentSession
       );
-
-      const newRefreshToken = signToken(
-        { sessionId: currentSession.id },
-        REFRESH_TOKEN_EXPIRY / MILI_SEC
-      );
-
-      const baseConfig = {
-        httpOnly: true,
-        secure: true,
-      };
-
-      res.cookie("access_token", accessToken, {
-        ...baseConfig,
-        maxAge: ACCESS_TOKEN_EXPIRY,
-      });
-
-      res.cookie("refresh_token", newRefreshToken, {
-        ...baseConfig,
-        maxAge: REFRESH_TOKEN_EXPIRY,
-      });
 
       const decodedAccessToken = verifyToken(accessToken);
       req.user = decodedAccessToken;

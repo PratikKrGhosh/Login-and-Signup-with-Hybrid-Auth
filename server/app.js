@@ -1,3 +1,4 @@
+// importing all modules
 import flash from "connect-flash";
 import cookieParser from "cookie-parser";
 import express from "express";
@@ -5,11 +6,14 @@ import session from "express-session";
 import path from "path";
 import requestIp from "request-ip";
 
+// importing all files
 import { authMiddleware } from "./middlewares/auth.middleware.js";
 import authRoute from "./routes/auth.route.js";
 
+// creating app
 const app = express();
 
+// all middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -32,6 +36,7 @@ app.use((req, res, next) => {
   return next();
 });
 
+// creating all Routes
 app.use("/", authRoute);
 
 app.get("/", (req, res) => {
@@ -40,8 +45,10 @@ app.get("/", (req, res) => {
   res.status(200).render("home");
 });
 
+// handling all undefined routes
 app.use("/", (req, res) => {
   res.status(404).send("Page Not Found");
 });
 
+// exporting app
 export default app;

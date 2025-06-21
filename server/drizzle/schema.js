@@ -1,3 +1,4 @@
+// importing all modules
 import { relations } from "drizzle-orm";
 import {
   int,
@@ -8,6 +9,7 @@ import {
   text,
 } from "drizzle-orm/mysql-core";
 
+// creating all tables
 export const sessionTable = mysqlTable("session_table", {
   id: int().autoincrement().primaryKey(),
   userId: int("user_id")
@@ -30,6 +32,7 @@ export const usersTable = mysqlTable("users_table", {
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
 
+// defining all relations
 const usersTableRelation = relations(usersTable, ({ many }) => ({
   session: many(sessionTable),
 }));
