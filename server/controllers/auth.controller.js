@@ -7,6 +7,10 @@ import {
   findSessionById,
 } from "../services/session.services.js";
 import { create_tokens_and_insert_cookies } from "../utils/token.cookie.js";
+import {
+  loginFormSchema,
+  signupFormSchema,
+} from "../validations/form.validate.js";
 
 // handling page routes
 export const getSignupPage = (req, res) => {
@@ -32,7 +36,14 @@ export const signup = async (req, res) => {
   try {
     if (req.user) return res.redirect("/");
 
-    const { name, userName, email, password } = req.body;
+    const { data, error } = signupFormSchema.safeParse(req.body);
+
+    if (error) {
+      req.flash("errors", error.errors[0].message);
+      return res.redirect("/signup");
+    }
+
+    const { name, userName, email, password } = data;
 
     const hashedPassword = await hashPassword(password);
 
@@ -59,7 +70,14 @@ export const login = async (req, res) => {
   try {
     if (req.user) return res.redirect("/");
 
-    const { userName, password } = req.body;
+    const { data, error } = loginFormSchema.safeParse(req.body);
+
+    if (error) {
+      req.flash("errors", error.errors[0].message);
+      return res.redirect("/login");
+    }
+
+    const { userName, password } = data;
     const userData = await findUserByUsername(userName);
 
     if (!userData) {
