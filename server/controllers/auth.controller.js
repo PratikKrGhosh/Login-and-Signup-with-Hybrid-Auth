@@ -83,7 +83,10 @@ export const login = async (req, res) => {
       ip: req.clientIp,
     });
 
-    create_tokens_and_insert_cookies(userData, newSession);
+    create_tokens_and_insert_cookies(res, {
+      userData,
+      sessionData: newSession,
+    });
 
     return res.status(200).redirect("/");
   } catch (err) {

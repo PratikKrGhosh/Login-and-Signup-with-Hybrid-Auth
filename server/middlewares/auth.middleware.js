@@ -25,10 +25,10 @@ export const authMiddleware = async (req, res, next) => {
     if (currentSession && currentSession.valid) {
       const userData = await findUserById(currentSession.userId);
 
-      const { accessToken } = create_tokens_and_insert_cookies(
+      const { accessToken } = create_tokens_and_insert_cookies(res, {
         userData,
-        currentSession
-      );
+        sessionData: currentSession,
+      });
 
       const decodedAccessToken = verifyToken(accessToken);
       req.user = decodedAccessToken;
