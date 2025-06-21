@@ -1,11 +1,12 @@
-import express from "express";
-import path from "path";
-import authRoute from "./routes/auth.route.js";
-import cookieParser from "cookie-parser";
-import session from "express-session";
 import flash from "connect-flash";
+import cookieParser from "cookie-parser";
+import express from "express";
+import session from "express-session";
+import path from "path";
 import requestIp from "request-ip";
+
 import { authMiddleware } from "./middlewares/auth.middleware.js";
+import authRoute from "./routes/auth.route.js";
 
 const app = express();
 

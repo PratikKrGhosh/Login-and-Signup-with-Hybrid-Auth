@@ -85,7 +85,7 @@ export const login = async (req, res) => {
       ip: req.clientIp,
     });
 
-    const accessToken = await signToken(
+    const accessToken = signToken(
       {
         name: userData.name,
         userName: userData.userName,
@@ -95,7 +95,7 @@ export const login = async (req, res) => {
       ACCESS_TOKEN_EXPIRY / MILI_SEC
     );
 
-    const refreshToken = await signToken(
+    const refreshToken = signToken(
       { sessionId: newSession.id },
       REFRESH_TOKEN_EXPIRY / MILI_SEC
     );
